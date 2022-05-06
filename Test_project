@@ -1,0 +1,32 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+from sklearn.metrics import mean_squared_error
+df=pd.read_csv("https://raw.githubusercontent.com/Load-Factors/DataSet/main/per-capita-consumption-k.csv",parse_dates=True)
+df.head()
+
+df.Year=pd.to_datetime(df.Year)
+df.set_index("Year",inplace=True)
+# df.plot()
+
+
+
+# model=SARIMAX(df,order=(1,1,1),seasonal_order=(0,0,0,1)) # org
+# results=model.fit()
+# results.summary()
+
+
+model=SARIMAX(df,order=(1,1,1),seasonal_order=(0,0,0,1)) # org
+results=model.fit()
+results.summary()
+
+pred=results.predict(start=pd.to_datetime("2020-01-01"),end=pd.to_datetime("2030-01-01"))
+print(pred)
+
+plt.figure(figsize=(10,5))
+plt.plot(df)
+plt.plot(pred,color="red")
+
+a=mean_squared_error(df[-10:],pred[-10:])
+print(np.sqrt(a))
